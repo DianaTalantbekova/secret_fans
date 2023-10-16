@@ -6,8 +6,8 @@ import 'package:secret_fans/widgets/custom_button1.dart';
 
 import '../resources/app_colors.dart';
 
-class OnBoarding1 extends StatelessWidget {
-  const OnBoarding1({super.key});
+class OnBoarding2 extends StatelessWidget {
+  const OnBoarding2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class OnBoarding1 extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/png/onboarding1.png',
+              'assets/png/onboarding2.png',
               fit: BoxFit.contain,
             ),
           ),
@@ -29,14 +29,14 @@ class OnBoarding1 extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Welcome!',
+                    'Customize contacts',
                     style: AppStyles.helper1,
                   ),
                   SizedBox(
                     height: 10.h,
                   ),
                   Text(
-                    'All your private contacts\nin one app',
+                    'Create tags, folders and\nmeetings with your contacts',
                     style: AppStyles.helper2,
                     textAlign: TextAlign.center,
                   ),
@@ -44,8 +44,8 @@ class OnBoarding1 extends StatelessWidget {
                     height: 89.h,
                   ),
                   CustomButton1(
-                    onTap: () => context.go('/onboarding2'),
-                    text: 'Continue',
+                    onTap: () => context.go('/create_pass'),
+                    text: 'Start',
                   ),
                 ],
               ),
