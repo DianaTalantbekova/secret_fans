@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../resources/resources.dart';
 import '../widgets/widgets.dart';
 
-
-class CreatePass extends StatelessWidget {
-  const CreatePass({super.key});
+class PasswordScreen extends StatelessWidget {
+  const PasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,20 @@ class CreatePass extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Row(
                 children: [
-                  const Expanded(child: SizedBox.shrink()),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => context.pop(),
+                        child: Image.asset(
+                          'assets/png/icons/back.png',
+                          fit: BoxFit.contain,
+                          width: 32.w,
+                          height: 32.h,
+                        ),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     flex: 2,
                     child: Center(
@@ -29,23 +42,15 @@ class CreatePass extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          'Skip',
-                          style: AppStyles.helper5,
-                        ),
-                      ),
-                    ),
-                  ),
+                  const Expanded(child: SizedBox.shrink()),
                 ],
               ),
             ),
             SizedBox(height: 69.h),
-            _buildText(isCreating: false),
+            Text(
+              'Enter password',
+              style: AppStyles.helper4,
+            ),
             SizedBox(height: 16.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -126,17 +131,15 @@ class CreatePass extends StatelessWidget {
               style: AppStyles.helper6,
               textAlign: TextAlign.center,
             ),
+            // Text(
+            //   'Wrong password\nPlease try again',
+            //   style: AppStyles.helper7.copyWith(color: AppColors.red),
+            //   textAlign: TextAlign.center,
+            // ),
             SizedBox(height: 32.h),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildText({bool isCreating = true}) {
-    return Text(
-      isCreating ? 'Create a password' : 'Repeat the password',
-      style: AppStyles.helper4,
     );
   }
 }
