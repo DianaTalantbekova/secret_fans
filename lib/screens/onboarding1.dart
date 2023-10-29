@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:secret_fans/resources/app_styles.dart';
-import 'package:secret_fans/widgets/custom_button1.dart';
 
-import '../resources/app_colors.dart';
+import '../resources/resources.dart';
+import '../widgets/widgets.dart';
 
 class OnBoarding1 extends StatelessWidget {
   const OnBoarding1({super.key});
