@@ -37,6 +37,7 @@ class CustomButton2 extends StatelessWidget {
           right: 12.w,
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
               'assets/png/icons/tag.png',

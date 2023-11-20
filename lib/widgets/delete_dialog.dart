@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../resources/app_colors.dart';
 import '../resources/app_styles.dart';
@@ -59,7 +60,10 @@ class DeleteDialog extends StatelessWidget {
                   ),
                   SizedBox(width: 32.w),
                   GestureDetector(
-                    onTap: onDeleteTap,
+                    onTap: () {
+                      onDeleteTap?.call();
+                      context.pop();
+                    },
                     child: Text(
                       'Delete',
                       style: AppStyles.helper9,

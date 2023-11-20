@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:secret_fans/main.dart';
+import 'package:secret_fans/managers/contacts_manager.dart';
+import 'package:secret_fans/managers/favorite_manager.dart';
+import 'package:secret_fans/managers/tag_manager.dart';
+import 'package:secret_fans/widgets/contact_info_widget.dart';
+import 'package:secret_fans/widgets/custom_button4.dart';
 
-import '../resources/resources.dart';
+import '../resources/app_styles.dart';
 import '../widgets/widgets.dart';
 
 class ContactsScreen extends StatelessWidget {
@@ -13,112 +21,92 @@ class ContactsScreen extends StatelessWidget {
     return Material(
       color: Colors.white,
       child: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 20.h),
-            const TextFieldWidget(),
-            SizedBox(height: 16.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Row(
-                children: [
-                  CustomButton2(
-                    onTap: () {},
-                    text: 'club',
-                    selected: true,
-                  ),
-                  SizedBox(width: 10.w),
-                  CustomButton2(
-                    onTap: () {},
-                    text: 'caffe',
-                  ),
-                  SizedBox(width: 10.w),
-                  CustomButton2(
-                    onTap: () {},
-                    text: 'gym',
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        child: Consumer2<ContactsManager, FavoriteManager>(
+          builder: (context, provider, provider2, child) {
+            return Column(
               children: [
-                Image.asset(
-                  'assets/png/icons/new_contact.png',
-                  fit: BoxFit.contain,
-                  width: 30.w,
-                  height: 30.h,
+                SizedBox(height: 20.h),
+                TextFieldWidget(
+                  controller: provider.textController,
+                  onClearTap: provider.clearText,
                 ),
-                SizedBox(width: 12.w),
-                GestureDetector(
-                  onTap: ()=> context.go('/contacts_screen/create_new_contact'),
-                  child: Text(
-                    'Create new contact',
-                    style:
-                        AppStyles.helper4.copyWith(color: AppColors.blueAccent),
+                if (!provider.isSearching) ...[
+                  SizedBox(height: 16.h),
+                  _buildTags(),
+                  SizedBox(height: 16.h),
+                  CustomButton4(
+                    onTap: () {
+                      contactsManager.contact = Contact();
+                      context.go('/contacts_screen/create_new_contact');
+                    },
+                  ),
+                  if (provider.isEmpty) ...[
+                    SizedBox(height: 205.h),
+                    GestureDetector(
+                      onTap: () {
+                        provider.getAll();
+                      },
+                      child: Text(
+                        'Here will be your\ncontacts',
+                        style: AppStyles.helper8,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ],
+                SizedBox(height: 16.h),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: provider.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final contact = provider.sortedContacts[index];
+                      final isFavorite = provider2.ids.contains(contact.id);
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: ContactInfoWidget(
+                          isFavorite: isFavorite,
+                          contact: contact,
+                          showLetter: provider.showLetter(contact),
+                          searchText: provider.searchText,
+                          onTap: () {
+                            provider.contact = contact;
+                            context.go('/contacts_screen/contact_info');
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
-            ),
-            // SizedBox(height: 205.h),
-            // Text(
-            //   'Here will be your\ncontacts',
-            //   style: AppStyles.helper8,
-            //   textAlign: TextAlign.center,
-            // ),
-            SizedBox(height: 16.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Row(
-                children: [
-                  Text(
-                    'A',
-                    style: AppStyles.helper8.copyWith(
-                      color: AppColors.blueAccent,
-                    ),
-                  ),
-                  SizedBox(width: 22.w),
-                  GestureDetector(
-                    onTap: () => context.go('/contacts_screen/contact_info'),
-                    child: SizedBox(
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/png/contact.png',
-                            fit: BoxFit.contain,
-                            width: 60.w,
-                            height: 60.h,
-                          ),
-                          SizedBox(width: 10.w),
-                          Text(
-                            'Adriana Tyler',
-                            style: AppStyles.helper4,
-                          ),
-                          SizedBox(width: 10.w),
-                          _buildIcon(isFavorite: true),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildIcon({bool isFavorite = false}) {
-    if (isFavorite) {
-      return Image.asset(
-        'assets/png/icons/favorite_icon.png',
-        fit: BoxFit.contain,
-        width: 24.w,
-        height: 24.h,
-      );
-    }
-    return const SizedBox();
+  Widget _buildTags() {
+    return Consumer<TagManager>(
+      builder: (context, provider, child) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: provider.tags
+                .map(
+                  (e) => Padding(
+                    padding: EdgeInsets.only(right: 10.w),
+                    child: CustomButton2(
+                      onTap: () => provider.select(e),
+                      text: e,
+                      selected: e == provider.selected,
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        );
+      },
+    );
   }
 }

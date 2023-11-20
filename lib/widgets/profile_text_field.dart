@@ -5,9 +5,17 @@ import '../resources/app_colors.dart';
 import '../resources/app_styles.dart';
 
 class ProfileTextField extends StatelessWidget {
-  const ProfileTextField({super.key, required this.title});
+
+
+  const ProfileTextField({
+    super.key,
+    required this.title,
+    this.controller, this.keyboardType,
+  });
 
   final String title;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +37,10 @@ class ProfileTextField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
+                controller: controller,
                 style: AppStyles.helper7.copyWith(fontSize: 18.r),
                 cursorColor: AppColors.gray,
+                keyboardType: keyboardType,
                 decoration: const InputDecoration.collapsed(hintText: ''),
               ),
             ),

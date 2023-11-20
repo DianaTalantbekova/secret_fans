@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import '../managers/password_manager.dart';
 import '../resources/resources.dart';
 import '../widgets/widgets.dart';
 
@@ -49,7 +51,11 @@ class PasswordChange extends StatelessWidget {
             ),
             SizedBox(height: 98.h),
             CustomButton3(
-              onTap: () {},
+              onTap: () {
+                context.read<PasswordManager>().createPassState =
+                    CreatePassState.change;
+                context.go('/settings_screen/password_change/change');
+              },
               asset: 'assets/png/icons/edit.png',
               text: 'Change',
             ),
@@ -73,7 +79,12 @@ class PasswordChange extends StatelessWidget {
       builder: (BuildContext context) {
         return DeleteDialog(
           onCancelTap: context.pop,
-          onDeleteTap: () {},
+          onDeleteTap: () {
+            context.read<PasswordManager>().deletePassword();
+            context
+              ..pop()
+              ..pop();
+          },
           text: 'password',
         );
       },

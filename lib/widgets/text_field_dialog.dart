@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../resources/app_colors.dart';
 import '../resources/app_styles.dart';
 
-class TextFieldDialog extends StatelessWidget {
+class TextFieldDialog extends StatefulWidget {
   const TextFieldDialog({
     super.key,
     required this.text,
     this.onCancelTap,
     this.onOkTap,
+    this.value,
   });
 
   final String text;
+  final String? value;
   final VoidCallback? onCancelTap;
-  final VoidCallback? onOkTap;
+  final void Function(String name)? onOkTap;
+
+  @override
+  State<TextFieldDialog> createState() => _TextFieldDialogState();
+}
+
+class _TextFieldDialogState extends State<TextFieldDialog> {
+  late final nameController = TextEditingController(text: widget.value)
+    ..addListener(_listener);
+
+  bool get validName => nameController.text.trim().isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +60,7 @@ class TextFieldDialog extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    text,
+                    widget.text,
                     style: AppStyles.helper4.copyWith(fontSize: 18.r),
                   ),
                 ),
@@ -63,6 +76,7 @@ class TextFieldDialog extends StatelessWidget {
                   border: Border.all(color: AppColors.grayAccent),
                 ),
                 child: TextField(
+                  controller: nameController,
                   cursorColor: AppColors.gray,
                   style: AppStyles.helper7.copyWith(fontSize: 18.r),
                   decoration: const InputDecoration.collapsed(hintText: ''),
@@ -75,7 +89,7 @@ class TextFieldDialog extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     GestureDetector(
-                      onTap: onCancelTap,
+                      onTap: widget.onCancelTap,
                       child: Text(
                         'Cancel',
                         style: AppStyles.helper5,
@@ -83,11 +97,12 @@ class TextFieldDialog extends StatelessWidget {
                     ),
                     SizedBox(width: 20.w),
                     GestureDetector(
-                      onTap: onOkTap,
+                      onTap: validName ? _onTap : null,
                       child: Text(
                         'Ok',
-                        style: AppStyles.helper5
-                            .copyWith(color: AppColors.grayAccent),
+                        style: AppStyles.helper5.copyWith(
+                          color: validName ? null : AppColors.grayAccent,
+                        ),
                       ),
                     ),
                   ],
@@ -98,5 +113,20 @@ class TextFieldDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onTap() {
+    widget.onOkTap?.call(nameController.text);
+    context.pop();
+  }
+
+  void _listener() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    nameController.removeListener(_listener);
+    super.dispose();
   }
 }

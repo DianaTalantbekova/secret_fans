@@ -9,4 +9,6 @@ class AppColors {
   static const lightestBlue = Color(0xFFDFF0F9);
   static const grayAccent = Color(0xFF8F8F8F);
   static const red = Color(0xFFFF4848);
+  static const color1 = Color(0xFFA0E8FF);
+  static const color2 = Color(0xFF2A2A2A);
 }

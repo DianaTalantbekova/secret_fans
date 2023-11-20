@@ -1,98 +1,107 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:secret_fans/managers/password_manager.dart';
 
 import '../resources/resources.dart';
 import '../widgets/widgets.dart';
 
-
 class CreatePass extends StatelessWidget {
-  const CreatePass({super.key});
+  const CreatePass({super.key, required this.hasSkip});
+
+  final bool hasSkip;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
       child: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Row(
-                children: [
-                  const Expanded(child: SizedBox.shrink()),
-                  Expanded(
-                    flex: 2,
-                    child: Center(
-                      child: Text(
-                        'Password',
-                        style: AppStyles.helper4,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          'Skip',
-                          style: AppStyles.helper5,
+        child: Consumer<PasswordManager>(
+          builder: (context, provider, child) {
+            return Column(
+              children: [
+                SizedBox(height: 20.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Visibility(
+                          visible: !hasSkip,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: GestureDetector(
+                              onTap: context.pop,
+                              child: Image.asset(
+                                'assets/png/icons/back.png',
+                                fit: BoxFit.contain,
+                                width: 28.w,
+                                height: 28.h,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
+                      Expanded(
+                        flex: 2,
+                        child: Center(
+                          child: Text(
+                            'Password',
+                            style: AppStyles.helper4,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Visibility(
+                          visible: hasSkip && !provider.hasPassword,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: Text(
+                                'Skip',
+                                style: AppStyles.helper5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 69.h),
+                Text(
+                  provider.labelText,
+                  style: AppStyles.helper4,
+                ),
+                SizedBox(height: 16.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    provider.passLength,
+                    (index) => Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6.w),
+                      child: Circles(isEmpty: provider.isEmpty(index)),
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 69.h),
-            _buildText(isCreating: false),
-            SizedBox(height: 16.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Circles(isEmpty: false),
-                SizedBox(width: 12.w),
-                Circles(isEmpty: false),
-                SizedBox(width: 12.w),
-                Circles(isEmpty: false),
-                SizedBox(width: 12.w),
-                Circles(isEmpty: false),
-              ],
-            ),
-            SizedBox(height: 60.h),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomCircleButton(digit: 1),
-                    SizedBox(width: 20.w),
-                    CustomCircleButton(digit: 2),
-                    SizedBox(width: 20.w),
-                    CustomCircleButton(digit: 3),
-                  ],
                 ),
-                SizedBox(height: 20.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomCircleButton(digit: 4),
-                    SizedBox(width: 20.w),
-                    CustomCircleButton(digit: 5),
-                    SizedBox(width: 20.w),
-                    CustomCircleButton(digit: 6),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomCircleButton(digit: 7),
-                    SizedBox(width: 20.w),
-                    CustomCircleButton(digit: 8),
-                    SizedBox(width: 20.w),
-                    CustomCircleButton(digit: 9),
-                  ],
+                SizedBox(height: 60.h),
+                GridView(
+                  padding: EdgeInsets.symmetric(horizontal: 67.w),
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 20.h,
+                    crossAxisSpacing: 20.w,
+                  ),
+                  children: List.generate(
+                    9,
+                    (index) => CustomCircleButton(
+                      digit: index + 1,
+                      onTap: () => provider.enterPass('${index + 1}'),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 20.h),
                 Padding(
@@ -102,11 +111,14 @@ class CreatePass extends StatelessWidget {
                       const Expanded(child: SizedBox.shrink()),
                       Expanded(
                         flex: 2,
-                        child: CustomCircleButton(digit: 0),
+                        child: CustomCircleButton(
+                          digit: 0,
+                          onTap: () => provider.enterPass('0'),
+                        ),
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: provider.removePass,
                           child: Image.asset(
                             'assets/png/icons/backspace.png',
                             fit: BoxFit.contain,
@@ -117,26 +129,22 @@ class CreatePass extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
+                ),
+                const Spacer(),
+                Text(
+                  provider.isWrongPassword
+                      ? 'Wrong password\nPlease try again'
+                      : 'Password adds an extra layer of security\nwhen using the app',
+                  style: AppStyles.helper6.copyWith(
+                      color: provider.isWrongPassword ? Colors.red : null),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 32.h),
               ],
-            ),
-            const Spacer(),
-            Text(
-              'Password adds an extra layer of security\nwhen using the app',
-              style: AppStyles.helper6,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 32.h),
-          ],
+            );
+          },
         ),
       ),
-    );
-  }
-
-  Widget _buildText({bool isCreating = true}) {
-    return Text(
-      isCreating ? 'Create a password' : 'Repeat the password',
-      style: AppStyles.helper4,
     );
   }
 }

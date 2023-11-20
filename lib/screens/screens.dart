@@ -14,7 +14,6 @@ export 'move_folders_screen.dart';
 export 'navigation_screen.dart';
 export 'opened_folder_screen.dart';
 export 'password_change.dart';
-export 'password_screen.dart';
 export 'premium_screen.dart';
 export 'settings_screen.dart';
 export 'tags_screen.dart';

@@ -5,7 +5,14 @@ import '../resources/app_colors.dart';
 import '../resources/app_styles.dart';
 
 class TextFieldWidget extends StatelessWidget {
-  const TextFieldWidget({super.key});
+  const TextFieldWidget({
+    super.key,
+    this.controller,
+    this.onClearTap,
+  });
+
+  final TextEditingController? controller;
+  final VoidCallback? onClearTap;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +38,7 @@ class TextFieldWidget extends StatelessWidget {
           SizedBox(width: 12.w),
           Expanded(
             child: TextField(
+              controller: controller,
               cursorColor: AppColors.gray,
               style: AppStyles.helper7,
               decoration: InputDecoration.collapsed(
@@ -40,7 +48,7 @@ class TextFieldWidget extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: onClearTap,
             child: Image.asset(
               'assets/png/icons/close.png',
               fit: BoxFit.contain,
